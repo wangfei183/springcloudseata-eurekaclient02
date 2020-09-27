@@ -1,0 +1,78 @@
+
+mybatis-plus:
+  # 如果是放在src/main/java目录下 classpath:/com/yourpackage/*/com.exchange.mapper/*Mapper.com.exchange.mapper
+  # 如果是放在resource目录 classpath:/com.exchange.mapper/*Mapper.com.exchange.mapper
+  #  mapper-locations: classpath:/mapper/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  #mapper-locations: classpath:/com/example/wf_book_20200717demo1/mapper/xml
+#  mapper-locations: classpath:/com/example/wf_book_20200717demo1/mapper/*.xml
+  #  mapper-locations: classpath:/mapper/*.xml
+#  typeAliasesPackage: com.example.wf_book_20200717demo1.bean
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 0
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    #refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+    # Sequence序列接口实现类配置
+    #逻辑删除配置（下面3个配置）
+    logic-delete-value: Y
+    logic-not-delete-value: N
+    #    sql-injector: com.nky.pork.quality.standard.conf.MybatisPlusConfig
+    configuration:
+      #配置返回数据库(column下划线命名&&返回java实体是驼峰命名)，自动匹配无需as（没开启这个，SQL需要写as： select user_id as userId）
+      map-underscore-to-camel-case: true
+      cache-enabled: false
+#配置JdbcTypeForNull, oracle数据库必须配置
+#        jdbc-type-for-null: 'null'
+spring:
+  application:
+    name: award
+  cloud:
+    alibaba:
+      seata:
+        # 这个fsp_tx_group自定义命名很重要，server，client都要保持一致
+        tx-service-group: wf_group
+  jackson:
+    time-zone: GMT+8
+  datasource:
+    url: jdbc:mysql://localhost:3306/seata_award?useUnicode=true&characterEncoding=utf8&serverTimezone=Hongkong
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+server:
+  port: 9113
+
+
+
+eureka:
+  #  instanc中的配置是让该服务使用IP注册到注册中心，而不是hostname
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://localhost:9110/eureka/
+
+seata:
+  enabled: true
+  application-id: award
+  #这里的名字与file.conf中vgroup_mapping.my_test_tx_group = "default"相同
+  tx-service-group: my_test_tx_group
+  enable-auto-data-source-proxy: true
+  #  use-jdk-proxy: false
+  service:
+    #这里的名字与file.conf中vgroup_mapping.my_test_tx_group = "default"相同
+    vgroup-mapping:
+      my_test_tx_group: default
+      #这里的名字与file.conf中default.grouplist = "127.0.0.1:8091"相同
+    grouplist:
+      default: 127.0.0.1:8091
+#      disable-global-transaction: false
+
+
